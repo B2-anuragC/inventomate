@@ -1,0 +1,54 @@
+{
+  "name": "inventory-system",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/inventory-system/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/inventory-system",
+        "main": "apps/inventory-system/src/main.ts",
+        "tsConfig": "apps/inventory-system/tsconfig.app.json",
+        "assets": ["apps/inventory-system/src/assets"],
+        "isolatedConfig": false,
+        "webpackConfig": "apps/inventory-system/webpack.config.js"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "inventory-system:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "inventory-system:build:development"
+        },
+        "production": {
+          "buildTarget": "inventory-system:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/inventory-system/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}

@@ -1,0 +1,65 @@
+{
+  "monorepo": true,
+  "root": "apps/inventory-system/inventory-system-source",
+  "sourceRoot": "apps/inventory-system/inventory-system-source/src",
+  "compilerOptions": {
+    "webpack": true,
+    "tsConfigPath": "apps/inventory-system/inventory-system-source/tsconfig.app.json"
+  },
+  "projects": {
+    "inventory-system-source": {
+      "type": "application",
+      "root": "apps/inventory-system/inventory-system-source",
+      "entryFile": "main",
+      "sourceRoot": "apps/inventory-system/inventory-system-source/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/inventory-system/inventory-system-source/tsconfig.app.json"
+      }
+    },
+    "transform": {
+      "type": "library",
+      "root": "libs/transform",
+      "entryFile": "index",
+      "sourceRoot": "libs/transform/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/transform/tsconfig.lib.json"
+      }
+    },
+    "exception": {
+      "type": "library",
+      "root": "libs/exception",
+      "entryFile": "index",
+      "sourceRoot": "libs/exception/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/exception/tsconfig.lib.json"
+      }
+    },
+    "constant": {
+      "type": "library",
+      "root": "libs/constant",
+      "entryFile": "index",
+      "sourceRoot": "libs/constant/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/constant/tsconfig.lib.json"
+      }
+    },
+    "interceptor": {
+      "type": "library",
+      "root": "libs/interceptor",
+      "entryFile": "index",
+      "sourceRoot": "libs/interceptor/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/interceptor/tsconfig.lib.json"
+      }
+    },
+    "utils": {
+      "type": "library",
+      "root": "libs/utils",
+      "entryFile": "index",
+      "sourceRoot": "libs/utils/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/utils/tsconfig.lib.json"
+      }
+    }
+  }
+}
