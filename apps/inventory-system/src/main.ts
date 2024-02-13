@@ -39,7 +39,7 @@ async function bootstrap() {
 
   app.useGlobalFilters(new AllExceptionFilter());
 
-  const port = process.env.NODE_PORT;
+  const port = process.env.PORT || 3000;
 
   app.useGlobalPipes(
     new ValidationPipe({
