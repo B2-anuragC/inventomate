@@ -29,11 +29,19 @@ export class ProductDocumentService {
   }
 
   async removeDoc(key: string) {
-    const params = {
-      Key: key,
-      Bucket: this.BUCKET_NAME,
-    };
-    const s3RemoveObj = await this.s3Instance.deleteObject(params).promise();
-    return s3RemoveObj;
+    try {
+      const params = {
+        Key: key,
+        Bucket: this.BUCKET_NAME,
+      };
+
+      console.log('params', params);
+
+      const s3RemoveObj = await this.s3Instance.deleteObject(params).promise();
+      return s3RemoveObj;
+    } catch (err) {
+      console.log(JSON.stringify(err));
+      throw err;
+    }
   }
 }
