@@ -32,3 +32,8 @@ export enum VALID_DOC_TYPE {
   TXT = 'text/plain',
   XLSX = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 }
+
+export enum sortType {
+  ASC = 'ASC',
+  DESC = 'DESC',
+}

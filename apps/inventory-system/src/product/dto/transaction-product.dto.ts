@@ -1,4 +1,4 @@
-import { TRANSACTION_ACTION } from '@inventory-system/constant';
+import { TRANSACTION_ACTION, sortType } from '@inventory-system/constant';
 import { commonSearch } from '@inventory-system/dto';
 import {
   ApiProperty,
@@ -94,4 +94,12 @@ export class GetTransaction extends PickType(commonSearch, [
   @Transform(({ value, key }) => parseInt(value))
   @IsOptional()
   quantity_LTE: number;
+
+  @ApiProperty({
+    enum: sortType,
+  })
+  @IsNotEmpty()
+  @IsEnum(sortType)
+  @IsString()
+  sortType: string;
 }

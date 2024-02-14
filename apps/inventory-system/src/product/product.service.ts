@@ -178,6 +178,7 @@ export class ProductService {
       quantity_LTE,
       page,
       limit,
+      sortType,
     } = getTransaction;
     let base_query = {};
 
@@ -227,10 +228,13 @@ export class ProductService {
     ];
 
     console.log(aggregate);
+
+    const sortBy = sortType == 'ASC' ? 1 : -1;
+
     return {
       data: await this.productTransDocument
         .aggregate(aggregate)
-        .sort({ createdAt: -1 }),
+        .sort({ createdAt: sortBy }),
       count: await this.productTransDocument.countDocuments(base_query),
     };
   }
