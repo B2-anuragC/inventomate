@@ -20,9 +20,9 @@ export class GeneralRespInterceptor<T> implements NestInterceptor<T, any> {
         return payload;
       }),
       catchError((error) => {
-        console.log('error.code', error.code);
-        console.log('error.message', error.message);
-        console.log('error', JSON.stringify(error));
+        //console.log('error.code', error.code);
+        //console.log('error.message', error.message);
+        //console.log('error', JSON.stringify(error));
         return throwError(() => {
           if (`${error.code}` == '11000') {
             return new ValidationException(

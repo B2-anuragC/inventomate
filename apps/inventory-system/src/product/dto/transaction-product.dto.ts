@@ -13,6 +13,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  Matches,
   Min,
 } from 'class-validator';
 import { Types } from 'mongoose';
@@ -102,4 +103,40 @@ export class GetTransaction extends PickType(commonSearch, [
   @IsEnum(sortType)
   @IsString()
   sortType: string;
+
+  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  productName: string;
+
+  @ApiProperty({
+    example: '2024-01-01 00:00:00',
+    format: 'YYYY-MM-DD HH:mm:ss',
+  })
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @Matches(
+    /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/,
+    {
+      message: '$property must be formatted as YYYY-MM-DD hh:mm:ss',
+    }
+  )
+  start_date: string;
+
+  @ApiProperty({
+    example: '2024-01-01 00:00:00',
+    format: 'YYYY-MM-DD HH:mm:ss',
+  })
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @Matches(
+    /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/,
+    {
+      message: '$property must be formatted as YYYY-MM-DD hh:mm:ss',
+    }
+  )
+  end_date: string;
 }

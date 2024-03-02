@@ -65,7 +65,7 @@ export class UserController {
       otpType: 'NEW_USER',
     });
 
-    console.log(otpDetail);
+    //console.log(otpDetail);
 
     let otpObj = {
       to: [userDetail.email],
@@ -74,7 +74,7 @@ export class UserController {
       html: `<h1>OTP for email verification: ${otpDetail.otp}</h1>`,
     };
 
-    console.log('otpObj', otpObj);
+    //console.log('otpObj', otpObj);
 
     const emailResp = this.emailService.sendmail(otpObj);
 
@@ -101,7 +101,7 @@ export class UserController {
       html: `<h1>OTP for Forget Password: ${otpDetail.otp}</h1>`,
     });
 
-    console.log(emailResp);
+    //console.log(emailResp);
 
     return {
       msg: 'OTP sent successfully',

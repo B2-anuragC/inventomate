@@ -5,6 +5,7 @@ import {
 } from '@inventory-system/exception';
 import { Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import dayjs from 'dayjs';
 import mongoose, { Model, Types } from 'mongoose';
 import { CreateProductServiceDto } from './dto/create-product.dto';
 import { GetProductDto } from './dto/get-product.dto';
@@ -58,7 +59,7 @@ export class ProductService {
       { $limit: limit },
     ];
 
-    console.log(JSON.stringify(aggregate));
+    //console.log(JSON.stringify(aggregate));
 
     return {
       data: await this.productDocument.aggregate(aggregate).sort({
@@ -93,7 +94,7 @@ export class ProductService {
 
   async createTransaction(transactionServiceDto: TransactionServiceDto) {
     const session = await this.mongooseConnection.startSession();
-    console.log('session start');
+    //console.log('session start');
 
     // transactionServiceDto.productId = new Types.ObjectId(
     //   transactionServiceDto.productId
@@ -149,20 +150,20 @@ export class ProductService {
         finalQuantity: productUpdatedDetail.productQuantity,
       };
 
-      console.log('transactionDoc', transactionDoc);
+      //console.log('transactionDoc', transactionDoc);
 
       const transactionDetail = await new this.productTransDocument(
         transactionDoc
       ).save({ session: session });
-      console.log(productUpdatedDetail, transactionDetail);
+      //console.log(productUpdatedDetail, transactionDetail);
 
       await session.commitTransaction();
     } catch (err) {
-      console.log(err);
+      //console.log(err);
       await session.abortTransaction();
       throw err;
     } finally {
-      console.log('session end');
+      //console.log('session end');
       await session.endSession();
     }
     return productUpdatedDetail;
@@ -179,27 +180,47 @@ export class ProductService {
       page,
       limit,
       sortType,
+      productName,
+      start_date,
+      end_date,
     } = getTransaction;
-    let base_query = {};
+    let base_query = [];
 
-    if (_id) Object.assign(base_query, { _id: new Types.ObjectId(_id) });
+    let queryAfterLookUp = {};
+
+    if (_id) base_query.push({ _id: new Types.ObjectId(_id) });
 
     if (productId)
-      Object.assign(base_query, { productId: new Types.ObjectId(productId) });
+      base_query.push({ productId: new Types.ObjectId(productId) });
 
-    if (actionBy)
-      Object.assign(base_query, { actionBy: new Types.ObjectId(actionBy) });
+    if (actionBy) base_query.push({ actionBy: new Types.ObjectId(actionBy) });
 
-    if (action) Object.assign(base_query, { action });
+    if (action) base_query.push({ action });
 
-    if (quantity_GTE)
-      Object.assign(base_query, { quantity: { $gte: quantity_GTE } });
+    if (quantity_GTE) base_query.push({ quantity: { $gte: quantity_GTE } });
 
-    if (quantity_LTE)
-      Object.assign(base_query, { quantity: { $lte: quantity_LTE } });
+    if (quantity_LTE) base_query.push({ quantity: { $lte: quantity_LTE } });
+
+    if (productName)
+      Object.assign(queryAfterLookUp, {
+        'productId.productName': {
+          $regex: new RegExp(productName),
+          $options: 'i',
+        },
+      });
+
+    if (start_date)
+      base_query.push({
+        createdAt: { $gte: dayjs(start_date).toDate() },
+      });
+
+    if (end_date)
+      base_query.push({
+        createdAt: { $lte: dayjs(end_date).toDate() },
+      });
 
     const aggregate = [
-      { $match: base_query },
+      { $match: base_query.length ? { $and: base_query } : {} },
       {
         $lookup: {
           from: 'product',
@@ -207,6 +228,9 @@ export class ProductService {
           foreignField: '_id',
           as: 'productId',
         },
+      },
+      {
+        $match: queryAfterLookUp,
       },
       {
         $unwind: '$productId',
@@ -223,19 +247,26 @@ export class ProductService {
       {
         $unwind: '$actionBy',
       },
-      { $skip: (page - 1) * limit },
-      { $limit: limit },
     ];
 
-    console.log(aggregate);
+    //console.log(aggregate);
 
     const sortBy = sortType == 'ASC' ? 1 : -1;
 
+    let countDetail = await this.productTransDocument.aggregate([
+      ...aggregate,
+      { $count: 'count' },
+    ]);
+
     return {
       data: await this.productTransDocument
-        .aggregate(aggregate)
+        .aggregate([
+          ...aggregate,
+          { $skip: (page - 1) * limit },
+          { $limit: limit },
+        ])
         .sort({ createdAt: sortBy }),
-      count: await this.productTransDocument.countDocuments(base_query),
+      count: countDetail.length ? countDetail[0].count : 0,
     };
   }
 

@@ -16,7 +16,10 @@ export class AllExceptionFilter implements ExceptionFilter {
         formatResponse(
           exception?.response?.error ||
             (exception?.error?.data ?? 'Try again! Something went wrong'),
-          exception?.response?.status || (exception?.error?.status ?? 500)
+          exception?.response?.status || (exception?.error?.status ?? 500),
+          process.env['NODE_ENV'] == 'development'
+            ? JSON.stringify(exception)
+            : undefined
         )
       );
   }

@@ -39,7 +39,7 @@ export class PermissionService {
       return !strObj.includes(item.toString());
     });
 
-    console.log(invalidObj);
+    //console.log(invalidObj);
 
     return invalidObj;
   }

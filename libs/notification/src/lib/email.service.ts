@@ -53,7 +53,7 @@ export class EmailService {
       subject: mailinfo.subject,
       html: mailinfo.html,
     };
-    console.log(mailOptions);
+    //console.log(mailOptions);
 
     let mailResp = null;
     let mailSent = false;
@@ -61,11 +61,11 @@ export class EmailService {
       mailResp = await transporter.sendMail(mailOptions);
       mailSent = true;
     } catch (err) {
-      console.log('default_transporter_config', transporter_config);
-      console.log('MAIL sent error', err);
+      //console.log('default_transporter_config', transporter_config);
+      //console.log('MAIL sent error', err);
       mailResp = err;
     }
-    console.log(mailResp);
+    //console.log(mailResp);
     return { mailstatus: mailSent, mailgunres: mailResp };
   }
 }

@@ -129,11 +129,11 @@ export class ProductController {
     @UploadedFiles()
     files?: Express.Multer.File[]
   ) {
-    // console.log(files.buffer.toString());
+    // //console.log(files.buffer.toString());
 
     const validatedFiles = new ProductDocFileValidationPipe().transform(files);
 
-    console.log('validatedFiles', validatedFiles);
+    //console.log('validatedFiles', validatedFiles);
 
     let productDetail = await this.productService.getProductById(productId);
 
@@ -153,7 +153,7 @@ export class ProductController {
       try {
         s3Resp = await this.docService.uploadDoc(file);
       } catch (err) {
-        console.log(JSON.stringify(err));
+        //console.log(JSON.stringify(err));
         inValidMsg.push(`S3 upload err: ${err}`);
       }
 
@@ -184,7 +184,7 @@ export class ProductController {
 
     const documentDetails = await Promise.allSettled(docsPromise);
 
-    console.log(documentDetails);
+    //console.log(documentDetails);
 
     let docs = documentDetails
       .filter((item) => item.status == 'fulfilled')
@@ -194,7 +194,7 @@ export class ProductController {
 
     const docDetail = await this.productService.addDocs(productId, docs);
 
-    console.log(docDetail);
+    //console.log(docDetail);
 
     return {
       product: docDetail,
@@ -213,7 +213,7 @@ export class ProductController {
       throw new NotFoundException('ProductId not found');
     }
 
-    console.log(productDetail);
+    //console.log(productDetail);
 
     let document = (productDetail['productDocuments'] || []).filter(
       (product) => product._id.toString() == removeDocDto.id
@@ -222,13 +222,13 @@ export class ProductController {
     if (document.length == 0) {
       throw new NotFoundException('Document not found');
     }
-    console.log('document', document);
+    //console.log('document', document);
 
     const { key, Bucket } = document[0]['docMetaData'] as any;
 
     let s3Resp = await this.docService.removeDoc(key);
 
-    console.log(s3Resp);
+    //console.log(s3Resp);
 
     productDetail['productDocuments'] = (
       productDetail['productDocuments'] || []

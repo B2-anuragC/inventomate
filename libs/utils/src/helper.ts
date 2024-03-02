@@ -1,17 +1,23 @@
 import axios, { AxiosResponse } from 'axios';
 import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
+// import utc from 'dayjs/plugin/utc';
 import { ApiResponse } from './types';
-dayjs.extend(utc);
+// dayjs.extend(utc);
 
-export type ISendResponse = (data: unknown, status: number) => ApiResponse;
+export type ISendResponse = (
+  data: unknown,
+  status: number,
+  debug?: any
+) => ApiResponse;
 
-export const formatResponse: ISendResponse = (data, status) => {
-  return {
+export const formatResponse: ISendResponse = (data, status, debug?: any) => {
+  let obj = {
     resCode: status,
     data: data,
     timeStamp: Date(),
   };
+  if (debug) Object.assign(obj, { debug });
+  return obj;
 };
 
 export const generateOTP = (): number => {
@@ -24,7 +30,7 @@ export const currentDate = (isMilli: boolean, date?: null) => {
 };
 
 export const dayJsDate = () => {
-  return dayjs().utc();
+  return dayjs();
 };
 
 interface AxiosConfig<T = any> {

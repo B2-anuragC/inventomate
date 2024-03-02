@@ -8,9 +8,12 @@ import { NestFactory } from '@nestjs/core';
 
 import { AllExceptionFilter } from '@inventory-system/interceptor';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as mongoose from 'mongoose';
 import { AppModule } from './app/app.module';
 
 async function bootstrap() {
+  mongoose.set('debug', true);
+
   const app = await NestFactory.create(AppModule, { cors: true });
   const globalPrefix = 'api';
   const swaggerPrefix = 'docs';

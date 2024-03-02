@@ -1,14 +1,14 @@
 import { DATE_TIME_FORMAT } from '@inventory-system/constant';
 import { ValidationException } from '@inventory-system/exception';
 import dayjs from 'dayjs';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
-import utc from 'dayjs/plugin/utc';
+// import customParseFormat from 'dayjs/plugin/customParseFormat';
+// import utc from 'dayjs/plugin/utc';
 import parsePhoneNumber from 'libphonenumber-js';
 import { Types } from 'mongoose';
 import { hashIt } from './crypt';
 
-dayjs.extend(utc);
-dayjs.extend(customParseFormat);
+// dayjs.extend(utc);
+// dayjs.extend(customParseFormat);
 
 export function toMongoObjectId({
   value,
@@ -34,13 +34,13 @@ export function strArrayToMongoObjectId({
   value: any;
   key: string;
 }): Types.ObjectId[] {
-  console.log('CHECK 1');
+  //console.log('CHECK 1');
   if (!Array.isArray(value)) {
     throw new ValidationException(`${key} is not a valid MongoId list`);
   }
-  console.log('CHECK 2');
+  //console.log('CHECK 2');
   let temp = value.map((item) => {
-    console.log('CHECK 3');
+    //console.log('CHECK 3');
     if (
       Types.ObjectId.isValid(item) &&
       new Types.ObjectId(item).toString() === item
@@ -50,7 +50,7 @@ export function strArrayToMongoObjectId({
       throw new ValidationException(`${key} is not a valid MongoId`);
     }
   });
-  console.log(temp);
+  //console.log(temp);
 
   return temp;
 }
@@ -110,7 +110,7 @@ export function convertDateTimeToUTC({
 }): string {
   const validateDate = dayjs(value, DATE_TIME_FORMAT);
   if (validateDate.isValid()) {
-    return validateDate.utc().format();
+    return validateDate.format();
   } else {
     throw new ValidationException(
       `${key} has an invalid datetime format ${value}. It should follow iso8601 format`
@@ -128,7 +128,7 @@ export function convertDateTimeToMilli({
   if (typeof value == 'number') return value;
   const validateDate = dayjs(value, DATE_TIME_FORMAT);
   if (validateDate.isValid()) {
-    return validateDate.utc().valueOf();
+    return validateDate.valueOf();
   } else {
     throw new ValidationException(
       `${key} has an invalid datetime format ${value}. It should follow iso8601(${DATE_TIME_FORMAT}) format`
@@ -146,7 +146,7 @@ export function validateDateTimeFormat({
   format: string;
 }): string {
   const validateDate = dayjs(value, format, true);
-  if (validateDate.isValid()) return validateDate.utc().format(format);
+  if (validateDate.isValid()) return validateDate.format(format);
   throw new ValidationException(
     `${key} has an invalid format ${value}. It should follow (${format}) format`
   );
