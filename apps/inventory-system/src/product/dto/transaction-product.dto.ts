@@ -19,6 +19,11 @@ import {
 import { Types } from 'mongoose';
 import { ProductTransaction } from '../model/transaction.model';
 
+export enum ReportType {
+  'PDF' = 'PDF',
+  'EXCEL' = 'EXCEL',
+}
+
 export class TransactionServiceDto extends OmitType(ProductTransaction, [
   'productId',
   'quantity',
@@ -56,7 +61,7 @@ export class TransactionDto extends PickType(TransactionServiceDto, [
   'quantity',
 ]) {}
 
-export class GetTransaction extends PickType(commonSearch, [
+export class GetTransactionReport extends PickType(commonSearch, [
   '_id',
   'limit',
   'page',
@@ -139,4 +144,16 @@ export class GetTransaction extends PickType(commonSearch, [
     }
   )
   end_date: string;
+
+  @ApiProperty({
+    enum: ReportType,
+  })
+  @ApiPropertyOptional()
+  @IsNotEmpty()
+  @IsEnum(ReportType)
+  reportType: string;
 }
+
+export class GetTransaction extends OmitType(GetTransactionReport, [
+  'reportType',
+]) {}

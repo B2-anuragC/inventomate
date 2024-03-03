@@ -10,6 +10,8 @@ import {
 } from './model/transaction.model';
 import { ProductController } from './product.controller';
 import { ProductService } from './product.service';
+import { ProuductReportService } from './report/product.report.service';
+import { ProuductTransReportService } from './report/transaction.report.service';
 
 @Module({
   imports: [
@@ -27,6 +29,11 @@ import { ProductService } from './product.service';
     }),
   ],
   controllers: [ProductController],
-  providers: [ProductService, ProductDocumentService],
+  providers: [
+    ProductService,
+    ProductDocumentService,
+    ProuductReportService,
+    ProuductTransReportService,
+  ],
 })
 export class ProductModule {}

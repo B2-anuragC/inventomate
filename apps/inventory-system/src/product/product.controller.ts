@@ -17,22 +17,30 @@ import {
   Put,
   Query,
   Req,
+  Res,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiSecurity, ApiTags } from '@nestjs/swagger';
-import { Types } from 'mongoose';
+import { PipelineStage, Types } from 'mongoose';
 import 'multer';
 import { AuthJWTGuard } from '../auth/guard/auth.guard';
 import { userJWTTokenDetail } from '../user/dto/register.dto';
 import { ProductDocumentService } from './doc.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { GetProductDto } from './dto/get-product.dto';
-import { GetTransaction, TransactionDto } from './dto/transaction-product.dto';
+import {
+  GetTransaction,
+  GetTransactionReport,
+  ReportType,
+  TransactionDto,
+} from './dto/transaction-product.dto';
 import { UpdateProductDto, removePrductDoc } from './dto/update-product.dto';
 import { ProductService } from './product.service';
+import { ProuductReportService } from './report/product.report.service';
+import { ProuductTransReportService } from './report/transaction.report.service';
 
 @Controller('product')
 @ApiSecurity('JWT-auth')
@@ -41,7 +49,9 @@ import { ProductService } from './product.service';
 export class ProductController {
   constructor(
     private readonly productService: ProductService, // private readonly docService: ProductDocumentService
-    private readonly docService: ProductDocumentService
+    private readonly docService: ProductDocumentService,
+    private readonly prodReportService: ProuductReportService,
+    private readonly prodTransReportService: ProuductTransReportService
   ) {}
 
   @ApiTags('Product')
@@ -103,6 +113,47 @@ export class ProductController {
   @Get('transaction/get')
   async getTransactions(@Query() getTransactionDto: GetTransaction) {
     return this.productService.getTransaction(getTransactionDto);
+  }
+
+  @ApiTags('Product Transaction')
+  @Get('transaction/get/report')
+  async getTransReport(
+    @Query() getTransactionReportDto: GetTransactionReport,
+    @Res() res: any
+  ) {
+    let aggregateQuery = await this.productService.getTransaction(
+      getTransactionReportDto,
+      true
+    );
+
+    console.log('Query', aggregateQuery);
+
+    if (getTransactionReportDto.reportType == ReportType.PDF) {
+      let pdfBuffer = await this.prodTransReportService.generatePdf(
+        aggregateQuery as PipelineStage[]
+      );
+
+      console.log('Buffer', pdfBuffer);
+
+      res.contentType('application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename=table.pdf'); // Adjust filename as needed
+      res.send(pdfBuffer);
+    } else {
+      let excelBuffer = await this.prodTransReportService.generateExcel(
+        aggregateQuery as PipelineStage[]
+      );
+
+      console.log('Buffer', excelBuffer);
+
+      res.contentType(
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      );
+      res.setHeader(
+        'Content-Disposition',
+        'attachment; filename=transactionReport.xlsx'
+      ); // Adjust filename as needed
+      res.send(excelBuffer);
+    }
   }
 
   @ApiTags('Product Documents')

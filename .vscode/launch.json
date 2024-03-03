@@ -5,13 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attach to NestJS Application",
+      "name": "Launch inventory-system",
+      "request": "launch",
       "type": "node",
-      "request": "attach",
-      "port": 9229, // Adjust if necessary
-      "restart": true,
-      "stopOnEntry": false,
-      "protocol": "inspector"
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["nx", "serve", "inventory-system"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/apps/inventory-system"
     }
   ]
 }

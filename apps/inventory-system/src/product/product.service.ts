@@ -19,6 +19,7 @@ import {
   ProductTransaction,
   ProductTransactionDoc,
 } from './model/transaction.model';
+import { ProuductReportService } from './report/product.report.service';
 
 @Injectable()
 export class ProductService {
@@ -30,7 +31,9 @@ export class ProductService {
     private readonly productTransDocument: Model<ProductTransactionDoc>,
 
     @InjectConnection()
-    private readonly mongooseConnection: mongoose.Connection
+    private readonly mongooseConnection: mongoose.Connection,
+
+    private readonly productReport: ProuductReportService
   ) {}
 
   async getProduct(getProductDto: GetProductDto) {
@@ -169,7 +172,7 @@ export class ProductService {
     return productUpdatedDetail;
   }
 
-  async getTransaction(getTransaction: GetTransaction) {
+  async getTransaction(getTransaction: GetTransaction, getQueryOnly = false) {
     const {
       _id,
       productId,
@@ -211,12 +214,12 @@ export class ProductService {
 
     if (start_date)
       base_query.push({
-        createdAt: { $gte: dayjs(start_date).toDate() },
+        createdAt: { $gte: new Date(dayjs(start_date).toDate()) },
       });
 
     if (end_date)
       base_query.push({
-        createdAt: { $lte: dayjs(end_date).toDate() },
+        createdAt: { $lte: new Date(dayjs(end_date).toDate()) },
       });
 
     const aggregate = [
@@ -249,7 +252,7 @@ export class ProductService {
       },
     ];
 
-    //console.log(aggregate);
+    if (getQueryOnly === true) return aggregate;
 
     const sortBy = sortType == 'ASC' ? 1 : -1;
 
