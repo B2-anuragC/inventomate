@@ -25,6 +25,9 @@ export class ProductTransaction {
   })
   action: string;
 
+  @Prop({ type: Number, required: true })
+  unitRate: number;
+
   @Prop({ type: Types.ObjectId, required: true, ref: 'user' })
   actionBy: Types.ObjectId;
 }

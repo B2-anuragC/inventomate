@@ -21,12 +21,19 @@ export class UpdateProductServiceDto {
   @IsNumber()
   @Transform(({ value, key }) => parseInt(value))
   'productPrice': number;
+
+  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsNumber()
+  @Transform(({ value, key }) => parseInt(value))
+  productUnitRate: number;
 }
 
 export class UpdateProductDto extends PickType(UpdateProductServiceDto, [
   'productName',
   'productDescription',
   'productPrice',
+  'productUnitRate',
 ]) {}
 
 export class removePrductDoc {

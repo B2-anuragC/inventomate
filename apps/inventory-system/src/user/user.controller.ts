@@ -65,16 +65,12 @@ export class UserController {
       otpType: 'NEW_USER',
     });
 
-    //console.log(otpDetail);
-
     let otpObj = {
       to: [userDetail.email],
       cc: [],
       subject: 'Email Verification',
       html: `<h1>OTP for email verification: ${otpDetail.otp}</h1>`,
     };
-
-    //console.log('otpObj', otpObj);
 
     const emailResp = this.emailService.sendmail(otpObj);
 
@@ -100,8 +96,6 @@ export class UserController {
       subject: 'Forget Password',
       html: `<h1>OTP for Forget Password: ${otpDetail.otp}</h1>`,
     });
-
-    //console.log(emailResp);
 
     return {
       msg: 'OTP sent successfully',

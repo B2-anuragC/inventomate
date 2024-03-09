@@ -105,7 +105,19 @@ export class ProductController {
     @Req() req: any
   ) {
     const { _id } = req.userDetail as userJWTTokenDetail;
-    const dtoWrapper = { ...transactionDto, actionBy: new Types.ObjectId(_id) };
+
+    if (!transactionDto.unitRate) {
+      const { productUnitRate } = await this.productService.getProductById(
+        transactionDto.productId
+      );
+      transactionDto.unitRate = productUnitRate;
+    }
+
+    const dtoWrapper = {
+      ...transactionDto,
+      actionBy: new Types.ObjectId(_id),
+      unitRate: transactionDto.unitRate,
+    };
     return this.productService.createTransaction(dtoWrapper);
   }
 
@@ -126,14 +138,10 @@ export class ProductController {
       true
     );
 
-    console.log('Query', aggregateQuery);
-
     if (getTransactionReportDto.reportType == ReportType.PDF) {
       let pdfBuffer = await this.prodTransReportService.generatePdf(
         aggregateQuery as PipelineStage[]
       );
-
-      console.log('Buffer', pdfBuffer);
 
       res.contentType('application/pdf');
       res.setHeader('Content-Disposition', 'attachment; filename=table.pdf'); // Adjust filename as needed
@@ -142,8 +150,6 @@ export class ProductController {
       let excelBuffer = await this.prodTransReportService.generateExcel(
         aggregateQuery as PipelineStage[]
       );
-
-      console.log('Buffer', excelBuffer);
 
       res.contentType(
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -180,11 +186,7 @@ export class ProductController {
     @UploadedFiles()
     files?: Express.Multer.File[]
   ) {
-    // //console.log(files.buffer.toString());
-
     const validatedFiles = new ProductDocFileValidationPipe().transform(files);
-
-    //console.log('validatedFiles', validatedFiles);
 
     let productDetail = await this.productService.getProductById(productId);
 
@@ -204,7 +206,6 @@ export class ProductController {
       try {
         s3Resp = await this.docService.uploadDoc(file);
       } catch (err) {
-        //console.log(JSON.stringify(err));
         inValidMsg.push(`S3 upload err: ${err}`);
       }
 
@@ -235,8 +236,6 @@ export class ProductController {
 
     const documentDetails = await Promise.allSettled(docsPromise);
 
-    //console.log(documentDetails);
-
     let docs = documentDetails
       .filter((item) => item.status == 'fulfilled')
       .map((document) => {
@@ -244,8 +243,6 @@ export class ProductController {
       });
 
     const docDetail = await this.productService.addDocs(productId, docs);
-
-    //console.log(docDetail);
 
     return {
       product: docDetail,
@@ -264,8 +261,6 @@ export class ProductController {
       throw new NotFoundException('ProductId not found');
     }
 
-    //console.log(productDetail);
-
     let document = (productDetail['productDocuments'] || []).filter(
       (product) => product._id.toString() == removeDocDto.id
     );
@@ -273,13 +268,10 @@ export class ProductController {
     if (document.length == 0) {
       throw new NotFoundException('Document not found');
     }
-    //console.log('document', document);
 
     const { key, Bucket } = document[0]['docMetaData'] as any;
 
     let s3Resp = await this.docService.removeDoc(key);
-
-    //console.log(s3Resp);
 
     productDetail['productDocuments'] = (
       productDetail['productDocuments'] || []

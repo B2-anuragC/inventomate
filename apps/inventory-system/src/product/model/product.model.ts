@@ -49,6 +49,9 @@ export class Product {
   @Prop({ type: Number, required: true })
   productPrice: number;
 
+  @Prop({ type: Number, required: true })
+  productUnitRate: number;
+
   @Prop({ type: Types.ObjectId, required: true, ref: 'user' })
   createdBy: Types.ObjectId;
 

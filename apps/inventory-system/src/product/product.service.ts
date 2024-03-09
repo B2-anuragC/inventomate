@@ -62,8 +62,6 @@ export class ProductService {
       { $limit: limit },
     ];
 
-    //console.log(JSON.stringify(aggregate));
-
     return {
       data: await this.productDocument.aggregate(aggregate).sort({
         updatedAt: -1,
@@ -97,7 +95,6 @@ export class ProductService {
 
   async createTransaction(transactionServiceDto: TransactionServiceDto) {
     const session = await this.mongooseConnection.startSession();
-    //console.log('session start');
 
     // transactionServiceDto.productId = new Types.ObjectId(
     //   transactionServiceDto.productId
@@ -153,20 +150,15 @@ export class ProductService {
         finalQuantity: productUpdatedDetail.productQuantity,
       };
 
-      //console.log('transactionDoc', transactionDoc);
-
       const transactionDetail = await new this.productTransDocument(
         transactionDoc
       ).save({ session: session });
-      //console.log(productUpdatedDetail, transactionDetail);
 
       await session.commitTransaction();
     } catch (err) {
-      //console.log(err);
       await session.abortTransaction();
       throw err;
     } finally {
-      //console.log('session end');
       await session.endSession();
     }
     return productUpdatedDetail;

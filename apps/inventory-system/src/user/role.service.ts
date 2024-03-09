@@ -22,8 +22,6 @@ export class RoleService {
         roleName: { $regex: new RegExp(getRole.name, 'i') },
       });
 
-    //console.log(query);
-
     return await this.roleDocument
       .find(query)
       // .populate('permissions')
@@ -32,7 +30,6 @@ export class RoleService {
   }
 
   async create(createRoleDto: createRoleDto) {
-    //console.log('service', createRoleDto);
     let invalidPermissions = await this.permissionService.checkValidPermissions(
       createRoleDto.permissions
     );

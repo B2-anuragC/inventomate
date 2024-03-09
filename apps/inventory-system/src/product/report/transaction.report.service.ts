@@ -19,6 +19,7 @@ const productTransColumn = [
   { header: 'Quantity Changed', key: 'quantity_changed' },
   { header: 'Final Quantity', key: 'final_quantity' },
   { header: 'Price', key: 'price' },
+  { header: 'UnitPrice', key: 'unitRate' },
   { header: 'Modifying Date', key: 'modifying_date' },
 ];
 
@@ -67,6 +68,7 @@ export class ProuductTransReportService {
         modifying_date: {
           $dateToString: { date: '$createdAt', format: '%Y-%m-%d %H:%M:%S' },
         },
+        unitRate: '$unitRate',
       },
     });
     let data = await this.productTransDocument.aggregate(aggregate);
@@ -77,8 +79,6 @@ export class ProuductTransReportService {
     let data = await this.fetchData(aggregate);
 
     data = this.mapPdfData(data);
-
-    console.log(data);
 
     const doc = new jsPDF();
     autoTable(doc, {
@@ -95,9 +95,6 @@ export class ProuductTransReportService {
     const workbook = new Workbook();
     const worksheet = workbook.addWorksheet('Sheet 1');
     worksheet.columns = productTransColumn;
-
-    console.log('QUERY', JSON.stringify(aggregate));
-    console.log('DATA', data);
 
     data.forEach((val, index) => {
       worksheet.addRow(val);

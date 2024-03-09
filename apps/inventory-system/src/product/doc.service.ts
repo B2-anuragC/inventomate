@@ -14,7 +14,6 @@ export class ProductDocumentService {
   });
 
   async uploadDoc(file: any) {
-    //console.log(file);
     const { originalname } = file;
 
     const params = {
@@ -35,12 +34,9 @@ export class ProductDocumentService {
         Bucket: this.BUCKET_NAME,
       };
 
-      //console.log('params', params);
-
       const s3RemoveObj = await this.s3Instance.deleteObject(params).promise();
       return s3RemoveObj;
     } catch (err) {
-      //console.log(JSON.stringify(err));
       throw err;
     }
   }

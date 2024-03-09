@@ -3,8 +3,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { AuthJWTGuard, AuthSocketJWTGuard } from './guard/auth.guard';
 
-//console.log('process.env', process.env);
-
 @Module({
   imports: [
     JwtModule.register({

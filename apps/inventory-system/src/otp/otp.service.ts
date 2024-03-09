@@ -40,10 +40,7 @@ export class OtpService {
       otpType: generateDto.otpType,
     };
 
-    //console.log('otpObj', otpObj);
-
     let otpDetail = await this.otpDocuemnt.create(otpObj);
-    //console.log('OTP generated', otpDetail);
 
     return otpDetail;
   }
@@ -60,8 +57,6 @@ export class OtpService {
     if (otpType) Object.assign(baseFilter, { otpType: otpType });
     if (req_id) Object.assign(baseFilter, { _id: req_id });
     if (email) Object.assign(baseFilter, { email: email });
-
-    //console.log('baseFilter', baseFilter);
 
     let updateDetail = await this.otpDocuemnt.findOneAndUpdate(
       baseFilter,

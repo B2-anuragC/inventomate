@@ -60,13 +60,11 @@ export const validateSignature = function (
 ) {
   encryptMessage(text, privateKey, function (hash: string) {
     if (signature === hash) {
-      //console.log(
       //   'Signature is Valid =>>>> validateSignature func()  SIGNATURE == HASH MATCHED '
       // );
       // cb(true)
       cb({ status: true, hash: hash });
     } else {
-      //console.log(signature + ' !== \n' + hash);
       cb({ status: false, hash: hash });
     }
   });

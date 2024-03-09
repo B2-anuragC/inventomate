@@ -49,6 +49,14 @@ export class TransactionServiceDto extends OmitType(ProductTransaction, [
   @IsEnum(TRANSACTION_ACTION)
   action: string;
 
+  @ApiProperty({
+    description:
+      'If not privided, will pick default unitRate(specified while product creation)',
+  })
+  @ApiPropertyOptional()
+  @IsNumber()
+  unitRate: number;
+
   @ApiProperty()
   @IsNotEmpty()
   @Type(() => Types.ObjectId)
@@ -59,6 +67,7 @@ export class TransactionDto extends PickType(TransactionServiceDto, [
   'productId',
   'action',
   'quantity',
+  'unitRate',
 ]) {}
 
 export class GetTransactionReport extends PickType(commonSearch, [

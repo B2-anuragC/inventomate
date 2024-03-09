@@ -86,6 +86,12 @@ export class CreateProductServiceDto extends PickType(Product, [
   @Transform(({ value, key }) => parseInt(value))
   productPrice: number;
 
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  @Transform(({ value, key }) => parseInt(value))
+  productUnitRate: number;
+
   @IsNotEmpty()
   @Type(() => Types.ObjectId)
   @Transform(toMongoObjectId)
@@ -102,4 +108,5 @@ export class CreateProductDto extends PickType(CreateProductServiceDto, [
   'productDescription',
   'productQuantity',
   'productPrice',
+  'productUnitRate',
 ]) {}

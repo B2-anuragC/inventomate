@@ -75,8 +75,6 @@ export class ProuductReportService {
 
     data = this.mapPdfData(data);
 
-    console.log(data);
-
     const doc = new jsPDF();
     autoTable(doc, {
       head: [productTransColumn.map((obj) => obj.key)],
@@ -92,9 +90,6 @@ export class ProuductReportService {
     const workbook = new Workbook();
     const worksheet = workbook.addWorksheet('Sheet 1');
     worksheet.columns = productTransColumn;
-
-    console.log('QUERY', JSON.stringify(aggregate));
-    console.log('DATA', data);
 
     data.forEach((val, index) => {
       worksheet.addRow(val);

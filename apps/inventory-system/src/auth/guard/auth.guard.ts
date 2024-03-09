@@ -15,8 +15,6 @@ export class AuthJWTGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
-      //console.log('AuthJWTGuard CHECK');
-
       const request = context.switchToHttp().getRequest();
       const { authorization }: any = request.headers;
       if (!authorization || authorization.trim() === '') {

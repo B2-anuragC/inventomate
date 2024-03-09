@@ -34,13 +34,11 @@ export function strArrayToMongoObjectId({
   value: any;
   key: string;
 }): Types.ObjectId[] {
-  //console.log('CHECK 1');
   if (!Array.isArray(value)) {
     throw new ValidationException(`${key} is not a valid MongoId list`);
   }
-  //console.log('CHECK 2');
+
   let temp = value.map((item) => {
-    //console.log('CHECK 3');
     if (
       Types.ObjectId.isValid(item) &&
       new Types.ObjectId(item).toString() === item
@@ -50,7 +48,6 @@ export function strArrayToMongoObjectId({
       throw new ValidationException(`${key} is not a valid MongoId`);
     }
   });
-  //console.log(temp);
 
   return temp;
 }
