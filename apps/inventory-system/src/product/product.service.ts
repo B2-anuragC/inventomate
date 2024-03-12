@@ -6,7 +6,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import dayjs from 'dayjs';
-import mongoose, { Model, Types } from 'mongoose';
+import mongoose, { Model, PipelineStage, Types } from 'mongoose';
 import { CreateProductServiceDto } from './dto/create-product.dto';
 import { GetProductDto } from './dto/get-product.dto';
 import {
@@ -37,7 +37,7 @@ export class ProductService {
   ) {}
 
   async getProduct(getProductDto: GetProductDto) {
-    const { _id, name, page, limit } = getProductDto;
+    const { _id, name, page, limit, sort, sortType } = getProductDto;
 
     let base_query = {};
 
@@ -47,6 +47,11 @@ export class ProductService {
       Object.assign(base_query, {
         productName: new RegExp(name, 'i'),
       });
+
+    let sorting = [];
+    if (sort) {
+      sorting.push({ $sort: { [sort]: sortType } });
+    }
 
     const aggregate = [
       { $match: base_query },
@@ -58,6 +63,7 @@ export class ProductService {
           as: 'createdBy',
         },
       },
+      ...sorting,
       { $skip: (page - 1) * limit },
       { $limit: limit },
     ];
@@ -75,10 +81,29 @@ export class ProductService {
   }
 
   async create(createProdServiceDto: CreateProductServiceDto) {
-    const productDetail = await this.productDocument.create(
-      createProdServiceDto
-    );
+    const session = await this.mongooseConnection.startSession();
+    let productDetail;
+    try {
+      session.startTransaction();
 
+      productDetail = await this.productDocument.create(createProdServiceDto);
+
+      let transDetail = await this.productTransDocument.create({
+        productId: productDetail._id,
+        finalQuantity: createProdServiceDto.productQuantity,
+        quantity: createProdServiceDto.productQuantity,
+        action: TRANSACTION_ACTION.INCREMENT,
+        unitRate: createProdServiceDto.productUnitRate,
+        actionBy: createProdServiceDto.createdBy,
+      });
+
+      await session.commitTransaction();
+    } catch (err) {
+      await session.abortTransaction();
+      throw err;
+    } finally {
+      await session.endSession();
+    }
     return productDetail;
   }
 
@@ -248,19 +273,20 @@ export class ProductService {
 
     const sortBy = sortType == 'ASC' ? 1 : -1;
 
+    const sorting = [{ $sort: { createdAt: sortBy } }];
+
     let countDetail = await this.productTransDocument.aggregate([
       ...aggregate,
       { $count: 'count' },
     ]);
 
     return {
-      data: await this.productTransDocument
-        .aggregate([
-          ...aggregate,
-          { $skip: (page - 1) * limit },
-          { $limit: limit },
-        ])
-        .sort({ createdAt: sortBy }),
+      data: await this.productTransDocument.aggregate([
+        ...aggregate,
+        ...sorting,
+        { $skip: (page - 1) * limit },
+        { $limit: limit },
+      ] as PipelineStage[]),
       count: countDetail.length ? countDetail[0].count : 0,
     };
   }

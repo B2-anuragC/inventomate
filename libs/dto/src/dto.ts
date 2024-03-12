@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
+  IsEnum,
   IsMongoId,
   IsNotEmpty,
   IsNumber,
@@ -9,6 +10,11 @@ import {
   Max,
   Min,
 } from 'class-validator';
+
+export enum sortType {
+  ASC = 'ASC',
+  'DESC' = 'DESC',
+}
 
 export class commonFilterQueryDto {
   constructor() {}
@@ -27,6 +33,24 @@ export class commonFilterQueryDto {
   @Max(30)
   @Min(1)
   limit: number = 10;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional({
+    example: 'createdAt',
+  })
+  sort: string;
+
+  @ApiProperty({
+    example: sortType.ASC,
+    enum: sortType,
+  })
+  @IsEnum(sortType)
+  @IsNotEmpty()
+  @Transform(({ value, key }) => {
+    return value == sortType.ASC ? 1 : -1;
+  })
+  sortType: string;
 }
 
 export class commonSearch extends commonFilterQueryDto {
