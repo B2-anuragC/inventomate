@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
-  IsEnum,
   IsMongoId,
   IsNotEmpty,
   IsNumber,
@@ -45,7 +44,6 @@ export class commonFilterQueryDto {
     example: sortType.ASC,
     enum: sortType,
   })
-  @IsEnum(sortType)
   @IsNotEmpty()
   @Transform(({ value, key }) => {
     return value == sortType.ASC ? 1 : -1;

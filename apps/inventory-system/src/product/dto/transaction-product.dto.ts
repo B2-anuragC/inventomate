@@ -1,5 +1,10 @@
 import { TRANSACTION_ACTION, sortType } from '@inventory-system/constant';
-import { commonSearch } from '@inventory-system/dto';
+import { commonFilterQueryDto, commonSearch } from '@inventory-system/dto';
+import {
+  convertDateToUTC,
+  dayJsDate,
+  toMongoObjectId,
+} from '@inventory-system/utils';
 import {
   ApiProperty,
   ApiPropertyOptional,
@@ -114,7 +119,6 @@ export class GetTransactionReport extends PickType(commonSearch, [
     enum: sortType,
   })
   @IsNotEmpty()
-  @IsEnum(sortType)
   @IsString()
   sortType: string;
 
@@ -166,3 +170,41 @@ export class GetTransactionReport extends PickType(commonSearch, [
 export class GetTransaction extends OmitType(GetTransactionReport, [
   'reportType',
 ]) {}
+
+export class GetTransactionTellyReport extends commonFilterQueryDto {
+  @ApiProperty({
+    example: '65f129a2e56436dc25ec4304',
+  })
+  @IsNotEmpty()
+  @Type(() => Types.ObjectId)
+  @Transform(toMongoObjectId)
+  productId: string;
+
+  @ApiProperty({
+    example: `${dayJsDate().format('YYYY-MM-DD')}`,
+  })
+  @IsString()
+  @IsNotEmpty()
+  @Transform(convertDateToUTC)
+  @IsOptional()
+  @ApiPropertyOptional()
+  startDate: string;
+
+  @ApiProperty({
+    example: `${dayJsDate().format('YYYY-MM-DD')}`,
+  })
+  @IsString()
+  @IsNotEmpty()
+  @Transform(convertDateToUTC)
+  @IsOptional()
+  @ApiPropertyOptional()
+  endDate: string;
+
+  @ApiProperty({
+    example: '65f129a2e56436dc25ec4304',
+  })
+  @IsNotEmpty()
+  @Type(() => Types.ObjectId)
+  @Transform(toMongoObjectId)
+  userId: string;
+}

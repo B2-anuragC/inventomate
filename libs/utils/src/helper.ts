@@ -1,8 +1,10 @@
+import { DATE_FORMAT } from '@inventory-system/constant';
+import { ValidationException } from '@inventory-system/exception';
 import axios, { AxiosResponse } from 'axios';
 import dayjs from 'dayjs';
-// import utc from 'dayjs/plugin/utc';
+import utc from 'dayjs/plugin/utc';
 import { ApiResponse } from './types';
-// dayjs.extend(utc);
+dayjs.extend(utc);
 
 export type ISendResponse = (
   data: unknown,
@@ -29,8 +31,8 @@ export const currentDate = (isMilli: boolean, date?: null) => {
   return isMilli !== true ? utcTime : utcTime.valueOf();
 };
 
-export const dayJsDate = () => {
-  return dayjs();
+export const dayJsDate = (...args: any[]) => {
+  return dayjs(...args).utc();
 };
 
 interface AxiosConfig<T = any> {
@@ -48,5 +50,24 @@ async function makeRequest<T>(
   } catch (error) {
     console.error('Axios request failed:', error);
     throw error;
+  }
+}
+
+export function convertDateToUTC({
+  value,
+  key,
+  format = DATE_FORMAT,
+}: {
+  value: string;
+  key: string;
+  format?: string;
+}): string {
+  const validateDate = dayjs(value, format, true);
+  if (validateDate.isValid()) {
+    return validateDate.utc().format(DATE_FORMAT);
+  } else {
+    throw new ValidationException(
+      `${key} has an invalid datetime format ${value}. It should follow YYYY-MM-DD`
+    );
   }
 }
