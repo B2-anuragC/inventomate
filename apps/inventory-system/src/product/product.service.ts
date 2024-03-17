@@ -312,4 +312,52 @@ export class ProductService {
       { safe: true, multi: true, new: false }
     );
   }
+
+  async getProductTally(productId: string) {
+    const responseCategory = {
+      INCREMENT: 'costPrice',
+      DECREMENT: 'sellPrice',
+    };
+
+    let response = await this.productTransDocument.aggregate([
+      { $match: { productId: new Types.ObjectId(productId) } },
+      {
+        $group: {
+          _id: '$action',
+          count: { $sum: '$checkoutPrice' }, // this means that the count will increment by 1
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          category: {
+            $cond: [{ $eq: ['$_id', 'INCREMENT'] }, 'costPrice', 'sellPrice'],
+          },
+          count: '$count',
+        },
+      },
+    ] as PipelineStage[]);
+
+    let resp: { _id: string; category: string; count: number }[] = [];
+    const cateList = Object.keys(responseCategory);
+    let total = 0;
+    for (let index in response) {
+      if (cateList.includes(response[index]['_id'])) {
+        resp.push({
+          _id: response[index]['_id'],
+          category: response[index]['category'],
+          count: response[index]['count'],
+        });
+        total += response[index]['count'];
+      }
+    }
+
+    resp.push({
+      _id: 'TOTAL',
+      category: 'total',
+      count: total,
+    });
+
+    return resp;
+  }
 }

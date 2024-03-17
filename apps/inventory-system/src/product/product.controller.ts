@@ -117,6 +117,7 @@ export class ProductController {
       ...transactionDto,
       actionBy: new Types.ObjectId(_id),
       unitRate: transactionDto.unitRate,
+      checkoutPrice: transactionDto.quantity * transactionDto.unitRate,
     };
     return this.productService.createTransaction(dtoWrapper);
   }
@@ -281,5 +282,11 @@ export class ProductController {
       product: productDetail,
       file_remove_detail: s3Resp,
     };
+  }
+
+  @ApiTags('Product Tally')
+  @Get('productTally/:id')
+  async productTally(@Param('id') id: string) {
+    return await this.productService.getProductTally(id);
   }
 }

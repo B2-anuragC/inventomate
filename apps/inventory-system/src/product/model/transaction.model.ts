@@ -6,7 +6,11 @@ export type ProductTransactionDoc = HydratedDocument<ProductTransaction>;
 
 @Schema({
   collection: 'product_transaction',
-  timestamps: true,
+  timestamps: {
+    createdAt: true,
+    updatedAt: false,
+  },
+  versionKey: false,
 })
 export class ProductTransaction {
   @Prop({ type: Types.ObjectId, required: true, ref: 'product' })

@@ -66,6 +66,10 @@ export class TransactionServiceDto extends OmitType(ProductTransaction, [
   @IsNotEmpty()
   @Type(() => Types.ObjectId)
   actionBy: Types.ObjectId;
+
+  @IsNotEmpty()
+  @IsNumber()
+  checkoutPrice: number;
 }
 
 export class TransactionDto extends PickType(TransactionServiceDto, [
