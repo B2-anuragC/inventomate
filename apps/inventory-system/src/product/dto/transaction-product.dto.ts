@@ -60,6 +60,7 @@ export class TransactionServiceDto extends OmitType(ProductTransaction, [
   })
   @ApiPropertyOptional()
   @IsNumber()
+  @IsOptional()
   unitRate: number;
 
   @ApiProperty()

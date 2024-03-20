@@ -34,6 +34,9 @@ export class ProductTransaction {
 
   @Prop({ type: Types.ObjectId, required: true, ref: 'user' })
   actionBy: Types.ObjectId;
+
+  @Prop({ type: Number, required: true, default: 0 })
+  checkoutPrice: number;
 }
 
 export const ProductTransactionSchema =

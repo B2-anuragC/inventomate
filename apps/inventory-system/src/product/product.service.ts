@@ -313,7 +313,7 @@ export class ProductService {
     );
   }
 
-  async getProductTally(productId: string) {
+  async getProductTelly(productId: string) {
     const responseCategory = {
       INCREMENT: 'costPrice',
       DECREMENT: 'sellPrice',

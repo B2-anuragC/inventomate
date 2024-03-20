@@ -284,9 +284,9 @@ export class ProductController {
     };
   }
 
-  @ApiTags('Product Tally')
-  @Get('productTally/:id')
-  async productTally(@Param('id') id: string) {
-    return await this.productService.getProductTally(id);
+  @ApiTags('Product Telly')
+  @Get('productTelly/:id')
+  async productTelly(@Param('id') id: string) {
+    return await this.productService.getProductTelly(id);
   }
 }
